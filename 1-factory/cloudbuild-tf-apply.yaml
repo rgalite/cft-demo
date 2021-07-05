@@ -38,7 +38,7 @@ steps:
   args:
   - -c
   - |
-      ./tf-wrapper.sh validate ${BRANCH_NAME} ${_POLICY_REPO} ${PROJECT_ID} CLOUDSOURCE
+      terraform validate
 # [START tf-apply]
 - id: 'tf apply'
   name: $_DEFAULT_REGION-docker.pkg.dev/$PROJECT_ID/$_GAR_REPOSITORY/terraform
@@ -46,7 +46,7 @@ steps:
   args:
   - -c
   - |
-      ./tf-wrapper.sh apply ${BRANCH_NAME}
+      terraform apply
 artifacts:
   objects:
     location: 'gs://${_ARTIFACT_BUCKET_NAME}/terraform/cloudbuild/apply/${BUILD_ID}'
