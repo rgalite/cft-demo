@@ -31,13 +31,29 @@ steps:
     for i in `find -name 'backend.tf'`; do sed -i 's/UPDATE_ME/${_STATE_BUCKET_NAME}/' $i; done
 
 # [START tf-plan_validate_all]
-- id: 'tf plan validate all'
+- id: 'tf plan'
   name: $_DEFAULT_REGION-docker.pkg.dev/$PROJECT_ID/$_GAR_REPOSITORY/terraform
   entrypoint: /bin/bash
   args:
   - -c
   - |
-      ./tf-wrapper.sh plan_validate_all ${BRANCH_NAME} ${_POLICY_REPO} ${PROJECT_ID} CLOUDSOURCE
+      if [ -d "apps/$BRANCH_NAME/" ]; then
+        cd apps/$BRANCH_NAME
+        terraform plan
+      else
+        for dir in apps/*/
+        do 
+          cd ${dir}   
+          env=${dir%*/}
+          env=${env#*/}  
+          echo ""
+          echo "*************** TERRAFOM PLAN ******************"
+          echo "******* At environment: ${env} ********"
+          echo "*************************************************"
+          terraform plan || exit 1
+          cd ../../
+        done
+      fi 
 
 artifacts:
   objects:
