@@ -15,6 +15,7 @@ steps:
     fi
     echo "Adding bucket information to backends"
     for i in `find -name 'backend.tf'`; do sed -i 's/UPDATE_ME/${_STATE_BUCKET_NAME}/' $i; done
+
 # [START tf-plan_validate_all]
 - id: 'tf plan validate all'
   name: $_DEFAULT_REGION-docker.pkg.dev/$PROJECT_ID/$_GAR_REPOSITORY/terraform
@@ -23,6 +24,7 @@ steps:
   - -c
   - |
       ./tf-wrapper.sh plan_validate_all ${BRANCH_NAME} ${_POLICY_REPO} ${PROJECT_ID} CLOUDSOURCE
+
 artifacts:
   objects:
     location: 'gs://${_ARTIFACT_BUCKET_NAME}/terraform/cloudbuild/plan/${BUILD_ID}'
