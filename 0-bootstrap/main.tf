@@ -1,25 +1,27 @@
-module "bootstrap_project" {
-  source  = "terraform-google-modules/project-factory/google"
-  version = "~> 10.1"
+module "seed_bootstrap" {
+  source  = "terraform-google-modules/bootstrap/google"
+  version = "~> 2.1"
 
-  random_project_id       = true
-  name                    = "bootstrap"
+  org_id               = var.organization_id
+  billing_account      = var.billing_account
+  group_org_admins     = var.group_org_admins
+  group_billing_admins = var.group_billing_admins
+  default_region       = var.default_region
+  project_prefix       = var.project_prefix
+  grant_billing_user   = false
+}
+
+module "cloudbuild_bootstrap" {
+  source  = "terraform-google-modules/bootstrap/google//modules/cloudbuild"
+  version = "~> 2.1"
+
   org_id                  = var.organization_id
   billing_account         = var.billing_account
-  default_service_account = "deprivilege"
-  activate_apis           = ["sourcerepo.googleapis.com", "cloudbuild.googleapis.com", "compute.googleapis.com"]
-}
-
-module "bootstrap_bucket" {
-  source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
-  version = "~> 1.3"
-
-  name       = "${module.bootstrap_project.project_id}-tfstate"
-  project_id = module.bootstrap_project.project_id
-  location   = var.region
-}
-
-resource "google_sourcerepo_repository" "bootstrap_repository" {
-  name    = module.bootstrap_project.project_id
-  project = module.bootstrap_project.project_id
+  group_org_admins        = var.group_org_admins
+  default_region          = var.default_region
+  sa_enable_impersonation = true
+  terraform_sa_email      = module.seed_bootstrap.terraform_sa_email
+  terraform_sa_name       = module.seed_bootstrap.terraform_sa_name
+  terraform_state_bucket  = module.seed_bootstrap.gcs_bucket_tfstate
+  project_prefix          = var.project_prefix
 }
