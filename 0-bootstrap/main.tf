@@ -2,13 +2,14 @@ module "seed_bootstrap" {
   source  = "terraform-google-modules/bootstrap/google"
   version = "~> 2.1"
 
-  org_id               = var.organization_id
-  billing_account      = var.billing_account
-  group_org_admins     = var.group_org_admins
-  group_billing_admins = var.group_billing_admins
-  default_region       = var.default_region
-  project_prefix       = var.project_prefix
-  grant_billing_user   = false
+  org_id                  = var.organization_id
+  billing_account         = var.billing_account
+  group_org_admins        = var.group_org_admins
+  group_billing_admins    = var.group_billing_admins
+  default_region          = var.default_region
+  project_prefix          = var.project_prefix
+  grant_billing_user      = false
+  sa_enable_impersonation = true
 }
 
 module "cloudbuild_bootstrap" {
